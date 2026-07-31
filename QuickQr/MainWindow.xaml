@@ -1,0 +1,153 @@
+<Window x:Class="QuickQr.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Quick QR" Width="1220" Height="790" MinWidth="980" MinHeight="660"
+        WindowStartupLocation="CenterScreen" Background="Transparent"
+        WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown" KeyDown="Window_KeyDown">
+    <Window.Resources>
+        <Style x:Key="InputBox" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="#70FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="13,11" />
+            <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="InputBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="InputBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                <Setter TargetName="InputBorder" Property="BorderThickness" Value="2" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter TargetName="InputBorder" Property="Opacity" Value="0.55" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Border ClipToBounds="True" CornerRadius="24" Background="{DynamicResource CanvasGradient}" BorderBrush="{DynamicResource WindowBorderBrush}" BorderThickness="1" Effect="{StaticResource SoftShadow}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" ClipToBounds="True" Background="{DynamicResource GlassBrush}" CornerRadius="24,24,0,0" BorderBrush="#80FFFFFF" BorderThickness="0,0,0,1">
+                <Grid Margin="28,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Width="34" Height="34" Source="/QuickQr;component/Assets/quick-qr.png" Stretch="Uniform" SnapsToDevicePixels="True" />
+                        <TextBlock Text="QUICK QR" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        <Border Background="#24FFFFFF" BorderBrush="#45FFFFFF" BorderThickness="1" CornerRadius="12" Margin="14,0,0,0" Padding="9,4">
+                            <TextBlock Text="DESKTOP" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TealBrush}" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Style="{StaticResource FlatButton}" ToolTip="History" Click="History_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE81C;" FontFamily="{StaticResource IconFont}" FontSize="15" /><TextBlock Text="History" FontSize="12" Margin="7,0,0,0" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Settings" Margin="3,0,8,0" Click="Settings_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE713;" FontFamily="{StaticResource IconFont}" FontSize="15" /><TextBlock Text="Settings" FontSize="12" Margin="7,0,0,0" /></StackPanel></Button>
+                        <TextBlock Text="QR WORKSPACE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Minimize" Width="34" Height="34" Click="Minimize_Click"><TextBlock Text="&#xE921;" FontFamily="{StaticResource IconFont}" FontSize="12" /></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Maximize" Width="34" Height="34" Click="Maximize_Click"><TextBlock Text="&#xE740;" FontFamily="{StaticResource IconFont}" FontSize="12" /></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Close" Width="34" Height="34" Click="Close_Click"><TextBlock Text="&#xE8BB;" FontFamily="{StaticResource IconFont}" FontSize="12" /></Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1" Margin="34,34,34,30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.04*" />
+                    <ColumnDefinition Width="34" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Create something scannable." FontFamily="{StaticResource DisplayFont}" FontSize="31" FontWeight="Bold" />
+                        <TextBlock Text="Turn a link, note or contact detail into a clean QR code." Foreground="{DynamicResource MutedBrush}" FontSize="14" Margin="0,9,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Margin="0,30,0,0">
+                        <TextBlock Text="CONTENT TYPE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                        <ComboBox x:Name="TypeCombo" Style="{StaticResource SelectBox}" SelectedIndex="0" SelectionChanged="TypeCombo_SelectionChanged">
+                            <ComboBoxItem Content="Plain text" Tag="text" />
+                            <ComboBoxItem Content="Web link" Tag="url" />
+                            <ComboBoxItem Content="E-mail address" Tag="email" />
+                            <ComboBoxItem Content="Wi-Fi network" Tag="wifi" />
+                            <ComboBoxItem Content="Phone number" Tag="phone" />
+                            <ComboBoxItem Content="SMS message" Tag="sms" />
+                            <ComboBoxItem Content="Contact card" Tag="vcard" />
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Margin="0,22,0,0">
+                        <Grid Margin="0,0,0,8">
+                            <TextBlock Text="YOUR CONTENT" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" />
+                            <TextBlock x:Name="CountText" Text="0 / 1200" Foreground="{DynamicResource MutedBrush}" FontSize="11" HorizontalAlignment="Right" />
+                        </Grid>
+                        <TextBox x:Name="ContentBox" Style="{StaticResource InputBox}" Height="144" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MaxLength="1200" TextChanged="ContentBox_TextChanged" />
+                        <TextBlock x:Name="HintText" Text="Add any text you want to share." Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="3,7,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Margin="0,25,0,0">
+                        <TextBlock Text="ERROR CORRECTION" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                        <ComboBox x:Name="CorrectionCombo" Style="{StaticResource SelectBox}" SelectedIndex="1" SelectionChanged="CorrectionCombo_SelectionChanged">
+                            <ComboBoxItem Content="Low · 7%" Tag="L" />
+                            <ComboBoxItem Content="Medium · 15%" Tag="M" />
+                            <ComboBoxItem Content="Quartile · 25%" Tag="Q" />
+                            <ComboBoxItem Content="High · 30%" Tag="H" />
+                        </ComboBox>
+                        <TextBlock Text="Higher correction makes codes more resilient, but slightly denser." Foreground="{DynamicResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="3,8,10,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button x:Name="CreateButton" Style="{StaticResource AccentButton}" Width="164" Click="CreateButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A7;" FontFamily="{StaticResource IconFont}" FontSize="15" /><TextBlock Text="Generate QR" Margin="8,0,0,0" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" Margin="8,0,0,0" Click="ClearButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74D;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Clear" Margin="7,0,0,0" /></StackPanel></Button>
+                    </StackPanel>
+                </Grid>
+                <Border Grid.Column="1" Background="{DynamicResource LineBrush}" Width="1" HorizontalAlignment="Center" />
+                <Grid Grid.Column="2" Margin="34,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <StackPanel>
+                            <TextBlock Text="LIVE PREVIEW" Foreground="{DynamicResource TealBrush}" FontSize="11" FontWeight="Bold" />
+                            <TextBlock Text="Your QR code" FontFamily="{StaticResource DisplayFont}" FontSize="25" FontWeight="Bold" Margin="0,5,0,0" />
+                        </StackPanel>
+                        <TextBlock x:Name="StatusText" Text="Ready" Foreground="{DynamicResource MutedBrush}" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                    </Grid>
+                    <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="16" Margin="0,20,0,22" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1">
+                        <Grid>
+                            <Border Background="{DynamicResource PreviewBrush}" CornerRadius="12" Margin="18" />
+                            <Image x:Name="QrImage" Width="280" Height="280" Stretch="Uniform" SnapsToDevicePixels="True" />
+                            <StackPanel x:Name="EmptyState" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Image Width="52" Height="52" Source="/QuickQr;component/Assets/quick-qr.png" Stretch="Uniform" SnapsToDevicePixels="True" HorizontalAlignment="Center" />
+                                <TextBlock Text="Start typing to see your QR" Foreground="{DynamicResource MutedBrush}" FontSize="13" Margin="0,5,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Grid Grid.Row="2">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="8" Height="8" Background="{DynamicResource TealBrush}" CornerRadius="4" VerticalAlignment="Center" />
+                            <TextBlock Text="PNG · 1024 × 1024 px" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="CopyButton" Style="{StaticResource FlatButton}" IsEnabled="False" Click="CopyButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8C8;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Copy" Margin="7,0,0,0" /></StackPanel></Button>
+                            <Button x:Name="SvgButton" Style="{StaticResource FlatButton}" IsEnabled="False" Margin="4,0,0,0" Click="SvgButton_Click"><TextBlock Text="SVG" FontSize="12" FontWeight="SemiBold" /></Button>
+                            <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" IsEnabled="False" Margin="8,0,0,0" Click="SaveButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74E;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Save PNG" Margin="7,0,0,0" /></StackPanel></Button>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

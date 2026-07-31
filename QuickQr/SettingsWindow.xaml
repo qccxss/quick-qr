@@ -1,0 +1,49 @@
+<Window x:Class="QuickQr.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Width="520" Height="620" WindowStartupLocation="CenterOwner"
+                ResizeMode="NoResize" Background="Transparent" WindowStyle="None" AllowsTransparency="True" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        <Border CornerRadius="22" Background="{DynamicResource CanvasGradient}" BorderBrush="{DynamicResource WindowBorderBrush}" BorderThickness="1" Padding="2" Effect="{StaticResource SoftShadow}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32">
+            <TextBlock Text="Settings" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="Bold" />
+            <TextBlock Text="Make Quick QR behave exactly the way you work." Foreground="{DynamicResource MutedBrush}" Margin="0,7,0,26" />
+            <TextBlock Text="APPEARANCE" Style="{StaticResource SectionLabel}" />
+            <ComboBox x:Name="ThemeCombo" Style="{StaticResource SelectBox}" Margin="0,8,0,20" SelectedIndex="0">
+                <ComboBoxItem Content="Light" Tag="Light" />
+                <ComboBoxItem Content="Dark" Tag="Dark" />
+                <ComboBoxItem Content="Sunrise" Tag="Sunrise" />
+                <ComboBoxItem Content="Galaxy" Tag="Galaxy" />
+                <ComboBoxItem Content="Forest" Tag="Forest" />
+                <ComboBoxItem Content="Ocean" Tag="Ocean" />
+            </ComboBox>
+            <TextBlock Text="QR OUTPUT" Style="{StaticResource SectionLabel}" />
+            <Grid Margin="0,12,0,10">
+                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Pixel size" FontWeight="SemiBold" />
+                    <TextBlock Text="Larger values create a sharper PNG." Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                </StackPanel>
+                <ComboBox x:Name="PixelSizeCombo" Grid.Column="1" Style="{StaticResource SelectBox}">
+                    <ComboBoxItem Content="12 px" Tag="12" /><ComboBoxItem Content="18 px" Tag="18" /><ComboBoxItem Content="24 px" Tag="24" /><ComboBoxItem Content="32 px" Tag="32" />
+                </ComboBox>
+            </Grid>
+            <CheckBox x:Name="QuietZoneCheck" Content="Include quiet zone" Foreground="{DynamicResource InkBrush}" Margin="0,8,0,18" />
+            <TextBlock Text="WORKFLOW" Style="{StaticResource SectionLabel}" />
+            <CheckBox x:Name="LivePreviewCheck" Content="Generate while typing" Foreground="{DynamicResource InkBrush}" Margin="0,12,0,10" />
+            <CheckBox x:Name="HistoryCheck" Content="Keep recent QR history" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
+            <Grid Margin="0,4,0,30">
+                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
+                <TextBlock Text="Maximum history items" VerticalAlignment="Center" />
+                <ComboBox x:Name="HistoryLimitCombo" Grid.Column="1" Style="{StaticResource SelectBox}">
+                    <ComboBoxItem Content="6" Tag="6" /><ComboBoxItem Content="12" Tag="12" /><ComboBoxItem Content="24" Tag="24" /><ComboBoxItem Content="48" Tag="48" />
+                </ComboBox>
+            </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Style="{StaticResource FlatButton}" Click="Cancel_Click" />
+                <Button Content="Save settings" Style="{StaticResource AccentButton}" Margin="10,0,0,0" Click="Save_Click" />
+            </StackPanel>
+        </StackPanel>
+            </ScrollViewer>
+        </Border>
+</Window>
