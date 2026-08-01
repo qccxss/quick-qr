@@ -41,20 +41,35 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="0" ClipToBounds="True" Background="{DynamicResource GlassBrush}" CornerRadius="24,24,0,0" BorderBrush="#80FFFFFF" BorderThickness="0,0,0,1">
                 <Grid Margin="28,0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="0">
                         <Image Width="34" Height="34" Source="/QuickQr;component/Assets/quick-qr.png" Stretch="Uniform" SnapsToDevicePixels="True" />
-                        <TextBlock Text="QUICK QR" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" Margin="12,0,0,0" VerticalAlignment="Center" />
-                        <Border Background="#24FFFFFF" BorderBrush="#45FFFFFF" BorderThickness="1" CornerRadius="12" Margin="14,0,0,0" Padding="9,4">
-                            <TextBlock Text="DESKTOP" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TealBrush}" />
-                        </Border>
+                        <StackPanel Margin="12,0,0,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="QUICK QR" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Background="#24FFFFFF" BorderBrush="#45FFFFFF" BorderThickness="1" CornerRadius="12" Padding="9,4" Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="DESKTOP" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,0">
+                                <TextBlock Text="QR WORKSPACE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" />
+                                <Border Background="#1A39B7A5" CornerRadius="10" Padding="8,4" Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="v0.0.2" Foreground="White" FontSize="11" FontWeight="Bold" />
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Button Style="{StaticResource FlatButton}" ToolTip="History" Click="History_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE81C;" FontFamily="{StaticResource IconFont}" FontSize="15" /><TextBlock Text="History" FontSize="12" Margin="7,0,0,0" /></StackPanel></Button>
-                        <Button Style="{StaticResource FlatButton}" ToolTip="Settings" Margin="3,0,8,0" Click="Settings_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE713;" FontFamily="{StaticResource IconFont}" FontSize="15" /><TextBlock Text="Settings" FontSize="12" Margin="7,0,0,0" /></StackPanel></Button>
-                        <TextBlock Text="QR WORKSPACE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,12,0" />
-                        <Button Style="{StaticResource FlatButton}" ToolTip="Minimize" Width="34" Height="34" Click="Minimize_Click"><TextBlock Text="&#xE921;" FontFamily="{StaticResource IconFont}" FontSize="12" /></Button>
-                        <Button Style="{StaticResource FlatButton}" ToolTip="Maximize" Width="34" Height="34" Click="Maximize_Click"><TextBlock Text="&#xE740;" FontFamily="{StaticResource IconFont}" FontSize="12" /></Button>
-                        <Button Style="{StaticResource FlatButton}" ToolTip="Close" Width="34" Height="34" Click="Close_Click"><TextBlock Text="&#xE8BB;" FontFamily="{StaticResource IconFont}" FontSize="12" /></Button>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1" Margin="0,0,0,0">
+                        <Button Style="{StaticResource FlatButton}" ToolTip="History" Click="History_Click" Margin="0,0,8,0"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE81C;" FontFamily="{StaticResource IconFont}" FontSize="15" VerticalAlignment="Center" /><TextBlock Text="History" FontSize="12" Margin="7,0,0,0" VerticalAlignment="Center" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="About" Margin="0,0,8,0" Click="About_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE946;" FontFamily="{StaticResource IconFont}" FontSize="15" VerticalAlignment="Center" /><TextBlock Text="About" FontSize="12" Margin="7,0,0,0" VerticalAlignment="Center" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Settings" Margin="0,0,8,0" Click="Settings_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE713;" FontFamily="{StaticResource IconFont}" FontSize="15" VerticalAlignment="Center" /><TextBlock Text="Settings" FontSize="12" Margin="7,0,0,0" VerticalAlignment="Center" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Open GitHub" Margin="0,0,8,0" Click="OpenGitHub_Click"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Viewbox Width="16" Height="16" Stretch="Uniform"><Path Fill="{DynamicResource InkBrush}" Data="M12,0 C5.372,0 0,5.372 0,12 C0,17.303 3.438,21.8 8.205,23.387 C8.805,23.5 9.025,23.137 9.025,22.82 C9.025,22.535 9.015,21.78 9.01,20.78 C5.672,21.504 4.968,19.17 4.968,19.17 C4.422,17.783 3.635,17.413 3.635,17.413 C2.546,16.668 3.714,16.683 3.714,16.683 C4.919,16.768 5.554,17.93 5.554,17.93 C6.624,19.765 8.353,19.335 9.039,19.028 C9.147,18.253 9.457,17.723 9.799,17.423 C7.134,17.119 4.333,16.088 4.333,11.49 C4.333,10.18 4.801,9.108 5.568,8.27 C5.445,7.967 5.033,6.746 5.665,5.094 C5.665,5.094 6.673,4.772 8.963,6.002 C9.92,5.736 10.946,5.603 11.966,5.598 C12.986,5.603 14.013,5.736 14.973,6.002 C17.263,4.45 18.269,4.772 18.269,4.772 C18.922,6.425 18.509,7.646 18.386,7.949 C19.156,8.787 19.619,9.859 19.619,11.17 C19.619,15.78 16.816,16.795 14.143,17.09 C14.572,17.46 14.956,18.193 14.956,19.312 C14.956,20.918 14.941,22.21 14.941,22.605 C14.941,22.924 15.157,23.299 15.766,23.181 C20.533,21.797 24,17.3 24,12 C24,5.372 18.627,0 12,0 Z" /></Viewbox><TextBlock Text="GitHub" FontSize="12" Margin="7,0,0,0" VerticalAlignment="Center" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Minimize" Width="34" Height="34" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Minimize_Click" Margin="0,0,4,0"><TextBlock Text="&#xE921;" FontFamily="{StaticResource IconFont}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" /></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Maximize" Width="34" Height="34" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Maximize_Click" Margin="0,0,4,0"><TextBlock Text="&#xE740;" FontFamily="{StaticResource IconFont}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" /></Button>
+                        <Button Style="{StaticResource FlatButton}" ToolTip="Close" Width="34" Height="34" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Close_Click"><TextBlock Text="&#xE8BB;" FontFamily="{StaticResource IconFont}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" /></Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -85,6 +100,9 @@
                             <ComboBoxItem Content="Wi-Fi network" Tag="wifi" />
                             <ComboBoxItem Content="Phone number" Tag="phone" />
                             <ComboBoxItem Content="SMS message" Tag="sms" />
+                            <ComboBoxItem Content="Bitcoin payment" Tag="bitcoin" />
+                            <ComboBoxItem Content="Event invitation" Tag="event" />
+                            <ComboBoxItem Content="Location" Tag="location" />
                             <ComboBoxItem Content="Contact card" Tag="vcard" />
                         </ComboBox>
                     </StackPanel>
@@ -98,7 +116,8 @@
                     </StackPanel>
                     <StackPanel Grid.Row="3" Margin="0,25,0,0">
                         <TextBlock Text="ERROR CORRECTION" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
-                        <ComboBox x:Name="CorrectionCombo" Style="{StaticResource SelectBox}" SelectedIndex="1" SelectionChanged="CorrectionCombo_SelectionChanged">
+                        <ComboBox x:Name="CorrectionCombo" Style="{StaticResource SelectBox}" SelectedIndex="0" SelectionChanged="CorrectionCombo_SelectionChanged">
+                            <ComboBoxItem Content="Auto" Tag="Auto" />
                             <ComboBoxItem Content="Low · 7%" Tag="L" />
                             <ComboBoxItem Content="Medium · 15%" Tag="M" />
                             <ComboBoxItem Content="Quartile · 25%" Tag="Q" />
@@ -128,7 +147,7 @@
                     <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="16" Margin="0,20,0,22" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1">
                         <Grid>
                             <Border Background="{DynamicResource PreviewBrush}" CornerRadius="12" Margin="18" />
-                            <Image x:Name="QrImage" Width="280" Height="280" Stretch="Uniform" SnapsToDevicePixels="True" />
+                            <Image x:Name="QrImage" Width="280" Height="280" Stretch="Uniform" SnapsToDevicePixels="True" Style="{StaticResource ImageFadeStyle}" />
                             <StackPanel x:Name="EmptyState" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Image Width="52" Height="52" Source="/QuickQr;component/Assets/quick-qr.png" Stretch="Uniform" SnapsToDevicePixels="True" HorizontalAlignment="Center" />
                                 <TextBlock Text="Start typing to see your QR" Foreground="{DynamicResource MutedBrush}" FontSize="13" Margin="0,5,0,0" />
@@ -138,12 +157,19 @@
                     <Grid Grid.Row="2">
                         <StackPanel Orientation="Horizontal">
                             <Border Width="8" Height="8" Background="{DynamicResource TealBrush}" CornerRadius="4" VerticalAlignment="Center" />
-                            <TextBlock Text="PNG · 1024 × 1024 px" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock x:Name="ImageInfoText" Text="PNG · 1024 × 1024 px" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button x:Name="CopyButton" Style="{StaticResource FlatButton}" IsEnabled="False" Click="CopyButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8C8;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Copy" Margin="7,0,0,0" /></StackPanel></Button>
-                            <Button x:Name="SvgButton" Style="{StaticResource FlatButton}" IsEnabled="False" Margin="4,0,0,0" Click="SvgButton_Click"><TextBlock Text="SVG" FontSize="12" FontWeight="SemiBold" /></Button>
-                            <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" IsEnabled="False" Margin="8,0,0,0" Click="SaveButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74E;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Save PNG" Margin="7,0,0,0" /></StackPanel></Button>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="CopyButton" Style="{StaticResource FlatButton}" IsEnabled="False" Click="CopyButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8C8;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Copy" Margin="7,0,0,0" /></StackPanel></Button>
+                                <Button x:Name="SvgButton" Style="{StaticResource FlatButton}" IsEnabled="False" Margin="4,0,0,0" Click="SvgButton_Click"><TextBlock Text="SVG" FontSize="12" FontWeight="SemiBold" /></Button>
+                                <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" IsEnabled="False" Margin="8,0,0,0" Click="SaveButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74E;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Save PNG" Margin="7,0,0,0" /></StackPanel></Button>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+                                <Button x:Name="CopyPayloadButton" Style="{StaticResource FlatButton}" IsEnabled="False" Click="CopyPayloadButton_Click"><TextBlock Text="Copy payload" FontSize="12" /></Button>
+                                <Button x:Name="CopyHtmlButton" Style="{StaticResource FlatButton}" IsEnabled="False" Margin="4,0,0,0" Click="CopyHtmlButton_Click"><TextBlock Text="Copy HTML" FontSize="12" /></Button>
+                                <Button x:Name="ShareButton" Style="{StaticResource AccentButton}" IsEnabled="False" Margin="8,0,0,0" Click="ShareButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE72D;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Share" Margin="7,0,0,0" /></StackPanel></Button>
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                 </Grid>
