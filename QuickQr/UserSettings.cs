@@ -11,7 +11,11 @@ namespace QuickQr
         Sunrise,
         Galaxy,
         Forest,
-        Ocean
+        Ocean,
+        Twilight,
+        Neon,
+        Minimal,
+        Glass
     }
 
     public sealed class UserSettings
@@ -102,6 +106,34 @@ namespace QuickQr
                 BackgroundColor = "#102532";
                 AccentColor = "#48B9E8";
                 CanvasColor = "#0C1B25";
+            }
+            else if (theme == AppTheme.Twilight)
+            {
+                ForegroundColor = "#F5E6FF";
+                BackgroundColor = "#1F173B";
+                AccentColor = "#8D6EFD";
+                CanvasColor = "#261C47";
+            }
+            else if (theme == AppTheme.Neon)
+            {
+                ForegroundColor = "#FFFFFF";
+                BackgroundColor = "#0C0E17";
+                AccentColor = "#FF5BEA";
+                CanvasColor = "#11131F";
+            }
+            else if (theme == AppTheme.Minimal)
+            {
+                ForegroundColor = "#1F2937";
+                BackgroundColor = "#FFFFFF";
+                AccentColor = "#111827";
+                CanvasColor = "#F8FAFC";
+            }
+            else if (theme == AppTheme.Glass)
+            {
+                ForegroundColor = "#FFFFFF";
+                BackgroundColor = "#1B2733";
+                AccentColor = "#76D7EA";
+                CanvasColor = "#16202B";
             }
             else
             {
