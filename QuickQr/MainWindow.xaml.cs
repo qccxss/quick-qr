@@ -1,9 +1,12 @@
 using Microsoft.Win32;
 using QRCoder;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace QuickQr
@@ -41,6 +44,9 @@ namespace QuickQr
                 : type == "wifi" ? "Use SSID|password|WPA for a Wi-Fi network."
                 : type == "phone" ? "Enter a phone number, including country code."
                 : type == "sms" ? "Use phone number and message separated by |."
+                : type == "bitcoin" ? "Use wallet|amount|label, or paste a bitcoin address."
+                : type == "event" ? "Use title|YYYYMMDDTHHMM|location|description."
+                : type == "location" ? "Use latitude|longitude|label for a map location."
                 : type == "vcard" ? "Use name|phone|email separated by |."
                 : "Add any text you want to share.";
             if (settings == null || settings.LivePreview) GenerateQr();
@@ -62,10 +68,14 @@ namespace QuickQr
             {
                 currentPng = null;
                 QrImage.Source = null;
+                ImageInfoText.Text = "PNG · preview disabled";
                 EmptyState.Visibility = Visibility.Visible;
                 CopyButton.IsEnabled = false;
                 SvgButton.IsEnabled = false;
                 SaveButton.IsEnabled = false;
+                CopyPayloadButton.IsEnabled = false;
+                CopyHtmlButton.IsEnabled = false;
+                ShareButton.IsEnabled = false;
                 StatusText.Text = "Ready";
                 return;
             }
@@ -86,11 +96,16 @@ namespace QuickQr
                         settings == null || settings.IncludeQuietZones);
                 }
 
-                QrImage.Source = ToBitmapImage(currentPng);
+                    QrImage.Source = ToBitmapImage(currentPng);
+                AnimateQrPreview();
+                UpdateImageInfo();
                 EmptyState.Visibility = Visibility.Collapsed;
                 CopyButton.IsEnabled = true;
                 SvgButton.IsEnabled = true;
                 SaveButton.IsEnabled = true;
+                CopyPayloadButton.IsEnabled = true;
+                CopyHtmlButton.IsEnabled = true;
+                ShareButton.IsEnabled = true;
                 StatusText.Text = "Updated just now";
             }
             catch (Exception ex)
@@ -115,6 +130,36 @@ namespace QuickQr
             {
                 var smsParts = value.Split(new[] { '|' }, 2);
                 return smsParts.Length == 2 ? "SMSTO:" + smsParts[0] + ":" + smsParts[1] : "SMSTO:" + value;
+            }
+            if (type == "bitcoin")
+            {
+                var bitcoinParts = value.Split(new[] { '|' }, 3);
+                var address = bitcoinParts.Length > 0 ? bitcoinParts[0] : value;
+                var amount = bitcoinParts.Length > 1 ? bitcoinParts[1] : string.Empty;
+                var label = bitcoinParts.Length > 2 ? bitcoinParts[2] : string.Empty;
+                var uri = "bitcoin:" + address;
+                var query = string.Empty;
+                if (!string.IsNullOrWhiteSpace(amount)) query += "amount=" + Uri.EscapeDataString(amount);
+                if (!string.IsNullOrWhiteSpace(label)) query += (query.Length > 0 ? "&" : string.Empty) + "label=" + Uri.EscapeDataString(label);
+                return query.Length > 0 ? uri + "?" + query : uri;
+            }
+            if (type == "event")
+            {
+                var eventParts = value.Split(new[] { '|' }, 4);
+                var title = eventParts.Length > 0 ? eventParts[0] : "Event";
+                var start = eventParts.Length > 1 ? eventParts[1] : string.Empty;
+                var location = eventParts.Length > 2 ? eventParts[2] : string.Empty;
+                var description = eventParts.Length > 3 ? eventParts[3] : string.Empty;
+                return "BEGIN:VEVENT\nSUMMARY:" + Uri.EscapeDataString(title) + "\nDTSTART:" + start + "\nLOCATION:" + Uri.EscapeDataString(location) + "\nDESCRIPTION:" + Uri.EscapeDataString(description) + "\nEND:VEVENT";
+            }
+            if (type == "location")
+            {
+                var locationParts = value.Split(new[] { '|' }, 3);
+                var latitude = locationParts.Length > 0 ? locationParts[0] : string.Empty;
+                var longitude = locationParts.Length > 1 ? locationParts[1] : string.Empty;
+                var label = locationParts.Length > 2 ? locationParts[2] : string.Empty;
+                var uri = "geo:" + latitude + "," + longitude;
+                return string.IsNullOrWhiteSpace(label) ? uri : uri + "?q=" + Uri.EscapeDataString(label);
             }
             if (type == "vcard")
             {
@@ -208,6 +253,30 @@ namespace QuickQr
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#123A4A"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#102332"), 1));
             }
+            else if (settings.Theme == AppTheme.Twilight)
+            {
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1F173B"), 0));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2F2052"), 0.52));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2B214F"), 1));
+            }
+            else if (settings.Theme == AppTheme.Neon)
+            {
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0C0E17"), 0));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1F1A3E"), 0.52));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0F1329"), 1));
+            }
+            else if (settings.Theme == AppTheme.Minimal)
+            {
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#FFFFFF"), 0));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#F5F7FA"), 0.52));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#E8EEF4"), 1));
+            }
+            else if (settings.Theme == AppTheme.Glass)
+            {
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1B2733"), 0));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#213144"), 0.52));
+                gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#172230"), 1));
+            }
             else
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#E9F2F3"), 0));
@@ -220,7 +289,7 @@ namespace QuickQr
 
         private bool IsDarkTheme()
         {
-            return settings.Theme == AppTheme.Dark || settings.Theme == AppTheme.Galaxy || settings.Theme == AppTheme.Forest || settings.Theme == AppTheme.Ocean;
+            return settings.Theme == AppTheme.Dark || settings.Theme == AppTheme.Galaxy || settings.Theme == AppTheme.Forest || settings.Theme == AppTheme.Ocean || settings.Theme == AppTheme.Twilight || settings.Theme == AppTheme.Neon || settings.Theme == AppTheme.Glass;
         }
 
         private void SetBrushColor(string key, string value)
@@ -247,6 +316,54 @@ namespace QuickQr
                 image.EndInit();
                 image.Freeze();
                 return image;
+            }
+        }
+
+        private void AnimateQrPreview()
+        {
+            if (QrImage == null) return;
+
+            if (!(QrImage.RenderTransform is ScaleTransform))
+            {
+                QrImage.RenderTransform = new ScaleTransform(0.98, 0.98);
+            }
+
+            QrImage.Opacity = 0;
+            var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            var scale = new DoubleAnimation(0.98, 1, TimeSpan.FromMilliseconds(220))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+
+            QrImage.BeginAnimation(UIElement.OpacityProperty, fade);
+            ((ScaleTransform)QrImage.RenderTransform).BeginAnimation(ScaleTransform.ScaleXProperty, scale);
+            ((ScaleTransform)QrImage.RenderTransform).BeginAnimation(ScaleTransform.ScaleYProperty, scale);
+        }
+
+        private void UpdateImageInfo()
+        {
+            if (QrImage.Source is BitmapSource bitmap)
+            {
+                ImageInfoText.Text = $"PNG · {bitmap.PixelWidth} × {bitmap.PixelHeight} px";
+            }
+            else
+            {
+                ImageInfoText.Text = "PNG · preview disabled";
+            }
+        }
+
+        private void OpenGitHub_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/qccxss/quick-qr") { UseShellExecute = true });
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not open GitHub link.", "Quick QR", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -345,6 +462,44 @@ namespace QuickQr
                 File.WriteAllBytes(dialog.FileName, currentPng);
                 StatusText.Text = "Saved successfully";
             }
+        }
+
+        private void CopyPayloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(ContentBox.Text)) return;
+            Clipboard.SetText(BuildPayload(ContentBox.Text.Trim()));
+            StatusText.Text = "Payload copied";
+        }
+
+        private void CopyHtmlButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentPng == null) return;
+            var base64 = Convert.ToBase64String(currentPng);
+            var html = $"<img src=\"data:image/png;base64,{base64}\" alt=\"Quick QR code\" />";
+            Clipboard.SetText(html);
+            StatusText.Text = "HTML snippet copied";
+        }
+
+        private void ShareButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(ContentBox.Text)) return;
+            try
+            {
+                var payload = BuildPayload(ContentBox.Text.Trim());
+                Process.Start(new ProcessStartInfo($"mailto:?subject=Quick%20QR&body={Uri.EscapeDataString(payload)}") { UseShellExecute = true });
+                StatusText.Text = "Sharing via mail client";
+            }
+            catch (Exception)
+            {
+                Clipboard.SetText(BuildPayload(ContentBox.Text.Trim()));
+                StatusText.Text = "Share failed, payload copied";
+            }
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new AboutWindow { Owner = this };
+            window.ShowDialog();
         }
 
         private void SvgButton_Click(object sender, RoutedEventArgs e)
