@@ -1,0 +1,21 @@
+<Window x:Class="QuickQr.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About Quick QR" Width="480" Height="380" WindowStyle="None" AllowsTransparency="True"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Border Background="{DynamicResource CanvasGradient}" BorderBrush="{DynamicResource WindowBorderBrush}" BorderThickness="1" CornerRadius="22" Padding="24" Effect="{StaticResource SoftShadow}">
+        <StackPanel>
+            <TextBlock Text="About Quick QR" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="Bold" />
+            <TextBlock Text="Version 0.0.2" Foreground="{DynamicResource MutedBrush}" Margin="0,8,0,20" />
+            <TextBlock Text="Quick QR is a lightweight desktop app for generating QR codes instantly. Create links, text, contact cards, payments, and location codes with quick previews and export options." TextWrapping="Wrap" FontSize="14" Foreground="{DynamicResource InkBrush}" />
+            <TextBlock Text="" Margin="0,12,0,0" />
+            <TextBlock Text="New in 0.0.2:" FontWeight="Bold" FontSize="14" />
+            <TextBlock Text="• Expanded theming options with Twilight, Neon, Minimal, and Glass." TextWrapping="Wrap" Margin="0,6,0,0" />
+            <TextBlock Text="• New QR content types: Bitcoin payment, Event invitation, and Location." TextWrapping="Wrap" Margin="0,4,0,0" />
+            <TextBlock Text="• Copy payload, copy HTML, and share actions for faster workflows." TextWrapping="Wrap" Margin="0,4,0,0" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+                <Button Style="{StaticResource FlatButton}" Width="110" Click="Close_Click">Close</Button>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
