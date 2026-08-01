@@ -9,7 +9,7 @@
 ![Language](https://img.shields.io/badge/language-C%23-239120?style=flat-square)
 ![UI](https://img.shields.io/badge/UI-WPF-5C2D91?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-white?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.0.1-black?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.0.2-black?style=flat-square)
 
 </div>
 
@@ -20,6 +20,14 @@
 **Quick QR** is a modern Windows desktop application for creating, previewing, copying, and exporting QR codes. It is built with WPF and .NET Framework 4.8, with a glass-inspired interface, live generation, configurable output settings, local history, and multiple visual themes.
 
 The application is designed to keep the QR creation workflow fast and private. Content is processed locally on the computer and is not uploaded to a remote service.
+
+---
+
+## What's new in 0.0.2
+
+- Added version display and GitHub repository access in the application UI.
+- Improved QR export workflow and polished status messaging.
+- Fixed history list behavior and UI consistency across windows.
 
 ---
 
@@ -324,6 +332,12 @@ Try the following:
 - Increase the pixel size.
 - Avoid placing the QR code on a busy background.
 - Make sure the exported image is not excessively compressed or blurred.
+
+---
+
+## License
+
+Quick QR is distributed under the MIT License. See [LICENSE](LICENSE) for the full license text.
 
 ---
 
