@@ -25,9 +25,10 @@ The application is designed to keep the QR creation workflow fast and private. C
 
 ## What's new in 0.0.2
 
-- Added version display and GitHub repository access in the application UI.
-- Improved QR export workflow and polished status messaging.
-- Fixed history list behavior and UI consistency across windows.
+- Expanded theming options with `Twilight`, `Neon`, `Minimal`, and `Glass`.
+- Added new QR content types: Bitcoin payment, Event invitation, and Location.
+- Added quick workflow actions: Copy payload, Copy HTML snippet, and Share (mailto integration).
+- Improved export workflows, status messaging, and several UI polish fixes.
 
 ---
 
@@ -40,12 +41,16 @@ The application is designed to keep the QR creation workflow fast and private. C
 - Wi-Fi network QR codes
 - Phone number QR codes
 - SMS message QR codes
-- vCard contact QR codes
-- Error correction levels:
-  - Low: 7%
-  - Medium: 15%
-  - Quartile: 25%
-  - High: 30%
+ - vCard contact QR codes
+ - Bitcoin payment QR codes (URI support)
+ - Event invitation QR codes (VEVENT/ICS snippets)
+ - Location QR codes (geo: URI)
+ - Error correction levels:
+   - Auto
+   - Low: 7%
+   - Medium: 15%
+   - Quartile: 25%
+   - High: 30%
 - PNG export
 - SVG export for scalable output
 - Copy generated QR codes to the clipboard
@@ -62,6 +67,24 @@ The application is designed to keep the QR creation workflow fast and private. C
 - Per-monitor DPI awareness
 - Standard-user execution through the application manifest
 - No external web service required during normal operation
+ - PNG export
+ - SVG export for scalable output
+ - Copy generated QR codes to the clipboard
+ - Copy payload (text/URI) and Copy HTML (data URI) actions
+ - Share action to open the default mail client with the payload
+ - Configurable QR pixel size
+ - Optional quiet zone control
+ - Local QR history
+ - Restore previously generated QR content
+ - Clear history support
+ - Live preview can be enabled or disabled
+ - Modern glass-inspired WPF interface
+ - Light, Dark, Sunrise, Galaxy, Forest, Ocean, Twilight, Neon, Minimal, and Glass themes
+ - Custom Windows application icon
+ - Borderless window with minimize, maximize, close, and drag support
+ - Per-monitor DPI awareness
+ - Standard-user execution through the application manifest
+ - No external web service required during normal operation
 
 ---
 
@@ -213,6 +236,16 @@ Available themes:
 - **Galaxy**: dark blue and violet palette
 - **Forest**: dark green palette
 - **Ocean**: dark cyan and blue palette
+ - **Twilight**: deep purple twilight accents
+ - **Neon**: dark background with neon accent tones
+ - **Minimal**: muted neutral surfaces for distraction-free use
+ - **Glass**: subtle glass and aqua accents
+ - **Light**: bright neutral glass surfaces
+ - **Dark**: high-contrast dark interface
+ - **Sunrise**: warm light palette
+ - **Galaxy**: dark blue and violet palette
+ - **Forest**: dark green palette
+ - **Ocean**: dark cyan and blue palette
 
 ### QR Output
 
@@ -335,12 +368,6 @@ Try the following:
 
 ---
 
-## License
-
-Quick QR is distributed under the MIT License. See [LICENSE](LICENSE) for the full license text.
-
----
-
 <div align="center">
-  <sub>Quick QR v0.0.1</sub>
+  <sub>Quick QR v0.0.2</sub>
 </div>
