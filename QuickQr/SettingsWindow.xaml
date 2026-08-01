@@ -16,6 +16,10 @@
                 <ComboBoxItem Content="Galaxy" Tag="Galaxy" />
                 <ComboBoxItem Content="Forest" Tag="Forest" />
                 <ComboBoxItem Content="Ocean" Tag="Ocean" />
+                <ComboBoxItem Content="Twilight" Tag="Twilight" />
+                <ComboBoxItem Content="Neon" Tag="Neon" />
+                <ComboBoxItem Content="Minimal" Tag="Minimal" />
+                <ComboBoxItem Content="Glass" Tag="Glass" />
             </ComboBox>
             <TextBlock Text="QR OUTPUT" Style="{StaticResource SectionLabel}" />
             <Grid Margin="0,12,0,10">
