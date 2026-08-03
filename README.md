@@ -9,7 +9,7 @@
 ![Language](https://img.shields.io/badge/language-C%23-239120?style=flat-square)
 ![UI](https://img.shields.io/badge/UI-WPF-5C2D91?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-white?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.0.2-black?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.0.2.5-black?style=flat-square)
 
 </div>
 
@@ -23,7 +23,7 @@ The application is designed to keep the QR creation workflow fast and private. C
 
 ---
 
-## What's new in 0.0.2
+## What's new in 0.0.2.5
 
 - Expanded theming options with `Twilight`, `Neon`, `Minimal`, and `Glass`.
 - Added new QR content types: Bitcoin payment, Event invitation, and Location.
@@ -46,7 +46,6 @@ The application is designed to keep the QR creation workflow fast and private. C
  - Event invitation QR codes (VEVENT/ICS snippets)
  - Location QR codes (geo: URI)
  - Error correction levels:
-   - Auto
    - Low: 7%
    - Medium: 15%
    - Quartile: 25%
@@ -94,46 +93,23 @@ The application is designed to keep the QR creation workflow fast and private. C
 |---|---|
 | Operating system | Windows 7, Windows 10, or Windows 11 |
 | Runtime | .NET Framework 4.8 |
-| Development IDE | Visual Studio 2022 recommended |
 | Build system | MSBuild or the .NET SDK |
 | Architecture | Any CPU |
 | Network access | Not required for normal QR generation |
 
-The target computer must have the .NET Framework 4.8 Runtime installed.
+Requires the .NET Framework 4.8 Runtime.
 
 ---
 
 ## Build
 
-### Visual Studio
-
-1. Open `quick-qr.sln` in Visual Studio 2022.
-2. Restore the NuGet package dependencies.
-3. Select the `Release` configuration.
-4. Build the solution with `Ctrl+Shift+B`.
-5. Run the application from the generated Release output folder.
-
-### .NET CLI
-
-Restore dependencies:
+Open `quick-qr.sln` in Visual Studio 2022 and build the solution, or run:
 
 ```powershell
-dotnet restore .\quick-qr.sln
+dotnet build .\quick-qr.sln
 ```
 
-Build the Release configuration:
-
-```powershell
-dotnet build .\quick-qr.sln --configuration Release
-```
-
-Build the Debug configuration:
-
-```powershell
-dotnet build .\quick-qr.sln --configuration Debug
-```
-
-The application output is generated under the project `bin` folder. Build output is intentionally not part of the source tree and can be regenerated at any time.
+Requires .NET Framework 4.8.
 
 ---
 
@@ -319,7 +295,7 @@ Quick QR uses the following NuGet package:
 |---|---:|---|
 | QRCoder | 1.6.0 | QR payload generation and PNG/SVG rendering |
 
-The package is restored automatically during development builds.
+The package is restored automatically during builds.
 
 ---
 
@@ -329,7 +305,7 @@ Quick QR is designed for local use:
 
 - QR content is processed locally.
 - No QR payload is sent to a web API.
-- Settings and history remain on the local computer.
+- Settings and history remain local.
 - Clipboard access occurs only when the user selects Copy.
 - File access occurs only when the user selects an export location.
 
@@ -368,6 +344,12 @@ Try the following:
 
 ---
 
+## License
+
+Quick QR is distributed under the MIT License. See [LICENSE](LICENSE) for the full license text.
+
+---
+
 <div align="center">
-  <sub>Quick QR v0.0.2</sub>
+  <sub>Quick QR v0.0.2.5</sub>
 </div>
