@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -22,10 +23,28 @@ namespace QuickQr
             settings = UserSettings.Load();
             history = new HistoryStore();
             history.Load();
-            ApplyTheme();
             InitializeComponent();
             ApplyTheme();
+            ApplySavedContentType();
             ContentBox.Focus();
+        }
+
+        private void ApplySavedContentType()
+        {
+            var index = GetTypeIndex(settings.LastContentType);
+            TypeCombo.SelectedIndex = index;
+        }
+
+        private int GetTypeIndex(string type)
+        {
+            for (var index = 0; index < TypeCombo.Items.Count; index++)
+            {
+                if ((TypeCombo.Items[index] as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() == type)
+                {
+                    return index;
+                }
+            }
+            return 0;
         }
 
         private void ContentBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -106,7 +125,22 @@ namespace QuickQr
                 CopyPayloadButton.IsEnabled = true;
                 CopyHtmlButton.IsEnabled = true;
                 ShareButton.IsEnabled = true;
-                StatusText.Text = "Updated just now";
+                if (settings.AutoCopy)
+                {
+                    try
+                    {
+                        Clipboard.SetImage(ToBitmapImage(currentPng));
+                        StatusText.Text = "QR copied automatically";
+                    }
+                    catch
+                    {
+                        StatusText.Text = "Updated just now";
+                    }
+                }
+                else
+                {
+                    StatusText.Text = "Updated just now";
+                }
             }
             catch (Exception ex)
             {
@@ -209,69 +243,75 @@ namespace QuickQr
 
         private void ApplyTheme()
         {
+            var effectiveTheme = settings.Theme;
+            if (settings.FollowSystemTheme || effectiveTheme == AppTheme.System)
+            {
+                effectiveTheme = GetSystemThemePreference() ? AppTheme.Light : AppTheme.Dark;
+            }
+
             SetBrushColor("InkBrush", settings.ForegroundColor);
-            SetBrushColor("MutedBrush", IsDarkTheme() ? "#A8B5B8" : "#657581");
+            SetBrushColor("MutedBrush", IsDarkTheme(effectiveTheme) ? "#A8B5B8" : "#657581");
             SetBrushColor("AccentBrush", settings.AccentColor);
             SetBrushColor("CanvasBrush", settings.CanvasColor);
             SetBrushColor("SurfaceBrush", settings.BackgroundColor);
-            SetBrushColor("PreviewBrush", IsDarkTheme() ? "#26383A" : settings.Theme == AppTheme.Sunrise ? "#FFF0DF" : "#E9F6F3");
-            SetBrushColor("LineBrush", IsDarkTheme() ? "#344249" : "#DDE7E7");
-            SetBrushColor("WindowBorderBrush", IsDarkTheme() ? "#4A5A60" : "#FFFFFF");
-            SetBrushColor("GlassBrush", IsDarkTheme() ? "#351E2933" : "#D9FFFFFF");
+            SetBrushColor("PreviewBrush", IsDarkTheme(effectiveTheme) ? "#26383A" : settings.Theme == AppTheme.Sunrise ? "#FFF0DF" : "#E9F6F3");
+            SetBrushColor("LineBrush", IsDarkTheme(effectiveTheme) ? "#344249" : "#DDE7E7");
+            SetBrushColor("WindowBorderBrush", IsDarkTheme(effectiveTheme) ? "#4A5A60" : "#FFFFFF");
+            SetBrushColor("GlassBrush", IsDarkTheme(effectiveTheme) ? "#351E2933" : "#D9FFFFFF");
             var gradient = new LinearGradientBrush
             {
                 StartPoint = new Point(0, 0),
                 EndPoint = new Point(1, 1)
             };
-            if (settings.Theme == AppTheme.Dark)
+            if (effectiveTheme == AppTheme.Dark)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#182326"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2A2429"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#172C2B"), 1));
             }
-            else if (settings.Theme == AppTheme.Sunrise)
+            else if (effectiveTheme == AppTheme.Sunrise)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#FFF2E7"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#F8E7DD"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#E7F0E8"), 1));
             }
-            else if (settings.Theme == AppTheme.Galaxy)
+            else if (effectiveTheme == AppTheme.Galaxy)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#101120"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#25203D"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#102B38"), 1));
             }
-            else if (settings.Theme == AppTheme.Forest)
+            else if (effectiveTheme == AppTheme.Forest)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#102019"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#18372C"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#102A2D"), 1));
             }
-            else if (settings.Theme == AppTheme.Ocean)
+            else if (effectiveTheme == AppTheme.Ocean)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0C1B25"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#123A4A"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#102332"), 1));
             }
-            else if (settings.Theme == AppTheme.Twilight)
+            else if (effectiveTheme == AppTheme.Twilight)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1F173B"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2F2052"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2B214F"), 1));
             }
-            else if (settings.Theme == AppTheme.Neon)
+            else if (effectiveTheme == AppTheme.Neon)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0C0E17"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1F1A3E"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#0F1329"), 1));
             }
-            else if (settings.Theme == AppTheme.Minimal)
+            else if (effectiveTheme == AppTheme.Minimal)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#FFFFFF"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#F5F7FA"), 0.52));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#E8EEF4"), 1));
             }
-            else if (settings.Theme == AppTheme.Glass)
+            else if (effectiveTheme == AppTheme.Glass)
             {
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1B2733"), 0));
                 gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#213144"), 0.52));
@@ -287,9 +327,28 @@ namespace QuickQr
             Background = Brushes.Transparent;
         }
 
-        private bool IsDarkTheme()
+        private bool IsDarkTheme(AppTheme theme)
         {
-            return settings.Theme == AppTheme.Dark || settings.Theme == AppTheme.Galaxy || settings.Theme == AppTheme.Forest || settings.Theme == AppTheme.Ocean || settings.Theme == AppTheme.Twilight || settings.Theme == AppTheme.Neon || settings.Theme == AppTheme.Glass;
+            return theme == AppTheme.Dark || theme == AppTheme.Galaxy || theme == AppTheme.Forest || theme == AppTheme.Ocean || theme == AppTheme.Twilight || theme == AppTheme.Neon || theme == AppTheme.Glass;
+        }
+
+        private bool GetSystemThemePreference()
+        {
+            try
+            {
+                using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    if (key?.GetValue("AppsUseLightTheme") is int value)
+                    {
+                        return value == 1;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return true;
         }
 
         private void SetBrushColor(string key, string value)
@@ -560,6 +619,23 @@ namespace QuickQr
             if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
             {
                 DragMove();
+            }
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            if (ContentBox != null && ContentBox.IsKeyboardFocused)
+            {
+                ContentBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                Keyboard.ClearFocus();
+            }
+        }
+
+        private void ContentBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (ContentBox != null && !ContentBox.IsKeyboardFocused)
+            {
+                Keyboard.ClearFocus();
             }
         }
     }
