@@ -344,12 +344,6 @@ Try the following:
 
 ---
 
-## License
-
-Quick QR is distributed under the MIT License. See [LICENSE](LICENSE) for the full license text.
-
----
-
 <div align="center">
   <sub>Quick QR v0.0.2.5</sub>
 </div>
