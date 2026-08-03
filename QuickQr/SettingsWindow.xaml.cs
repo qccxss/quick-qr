@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,11 +14,13 @@ namespace QuickQr
         {
             InitializeComponent();
             this.settings = settings;
-            ThemeCombo.SelectedIndex = (int)settings.Theme;
+            ThemeCombo.SelectedIndex = Math.Min((int)settings.Theme, ThemeCombo.Items.Count - 1);
             PixelSizeCombo.SelectedIndex = PixelIndex(settings.PixelSize);
             HistoryLimitCombo.SelectedIndex = HistoryIndex(settings.MaxHistoryItems);
             QuietZoneCheck.IsChecked = settings.IncludeQuietZones;
             LivePreviewCheck.IsChecked = settings.LivePreview;
+            AutoCopyCheck.IsChecked = settings.AutoCopy;
+            SystemThemeCheck.IsChecked = settings.FollowSystemTheme;
             HistoryCheck.IsChecked = settings.SaveHistory;
         }
 
@@ -45,7 +48,12 @@ namespace QuickQr
             settings.MaxHistoryItems = int.Parse((HistoryLimitCombo.SelectedItem as ComboBoxItem).Tag.ToString());
             settings.IncludeQuietZones = QuietZoneCheck.IsChecked == true;
             settings.LivePreview = LivePreviewCheck.IsChecked == true;
-            settings.SaveHistory = HistoryCheck.IsChecked == true;
+            settings.AutoCopy = AutoCopyCheck.IsChecked == true;
+            settings.FollowSystemTheme = SystemThemeCheck.IsChecked == true;
+            if (settings.FollowSystemTheme)
+            {
+                settings.Theme = AppTheme.System;
+            }
             settings.ApplyTheme(settings.Theme);
             settings.Save();
             Result = settings;
