@@ -12,9 +12,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.2</Version>
-    <FileVersion>0.0.2.0</FileVersion>
-    <InformationalVersion>0.0.2</InformationalVersion>
+    <Version>0.0.2.5</Version>
+    <FileVersion>0.0.2.5</FileVersion>
+    <InformationalVersion>0.0.2.5</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="QRCoder" Version="1.6.0" />
