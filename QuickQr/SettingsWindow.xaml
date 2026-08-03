@@ -20,6 +20,10 @@
                 <ComboBoxItem Content="Neon" Tag="Neon" />
                 <ComboBoxItem Content="Minimal" Tag="Minimal" />
                 <ComboBoxItem Content="Glass" Tag="Glass" />
+                <ComboBoxItem Content="Solarized" Tag="Solarized" />
+                <ComboBoxItem Content="Monochrome" Tag="Monochrome" />
+                <ComboBoxItem Content="Pastel" Tag="Pastel" />
+                <ComboBoxItem Content="System" Tag="System" />
             </ComboBox>
             <TextBlock Text="QR OUTPUT" Style="{StaticResource SectionLabel}" />
             <Grid Margin="0,12,0,10">
@@ -35,6 +39,8 @@
             <CheckBox x:Name="QuietZoneCheck" Content="Include quiet zone" Foreground="{DynamicResource InkBrush}" Margin="0,8,0,18" />
             <TextBlock Text="WORKFLOW" Style="{StaticResource SectionLabel}" />
             <CheckBox x:Name="LivePreviewCheck" Content="Generate while typing" Foreground="{DynamicResource InkBrush}" Margin="0,12,0,10" />
+            <CheckBox x:Name="AutoCopyCheck" Content="Copy QR automatically" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
+            <CheckBox x:Name="SystemThemeCheck" Content="Follow Windows theme" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
             <CheckBox x:Name="HistoryCheck" Content="Keep recent QR history" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
             <Grid Margin="0,4,0,30">
                 <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
