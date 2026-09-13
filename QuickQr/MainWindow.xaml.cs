@@ -1,14 +1,19 @@
 using Microsoft.Win32;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 using QRCoder;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace QuickQr
 {
@@ -17,6 +22,9 @@ namespace QuickQr
         private byte[] currentPng;
         private readonly UserSettings settings;
         private readonly HistoryStore history;
+        private readonly DispatcherTimer previewTimer;
+        private readonly DispatcherTimer autoSaveTimer;
+        public bool AllowClose { get; set; }
 
         public MainWindow()
         {
@@ -24,6 +32,11 @@ namespace QuickQr
             history = new HistoryStore();
             history.Load();
             InitializeComponent();
+            previewTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(180) };
+            previewTimer.Tick += PreviewTimer_Tick;
+            autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(650) };
+            autoSaveTimer.Tick += AutoSaveTimer_Tick;
+            RenderOptions.SetBitmapScalingMode(QrImage, BitmapScalingMode.NearestNeighbor);
             ApplyTheme();
             ApplySavedContentType();
             ContentBox.Focus();
@@ -50,7 +63,7 @@ namespace QuickQr
         private void ContentBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             CountText.Text = ContentBox.Text.Length + " / 1200";
-            if (settings == null || settings.LivePreview) GenerateQr();
+            if (settings == null || settings.LivePreview) SchedulePreview();
         }
 
         private void TypeCombo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -68,7 +81,7 @@ namespace QuickQr
                 : type == "location" ? "Use latitude|longitude|label for a map location."
                 : type == "vcard" ? "Use name|phone|email separated by |."
                 : "Add any text you want to share.";
-            if (settings == null || settings.LivePreview) GenerateQr();
+            if (settings == null || settings.LivePreview) SchedulePreview();
         }
 
         private void CorrectionCombo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -91,6 +104,7 @@ namespace QuickQr
                 EmptyState.Visibility = Visibility.Visible;
                 CopyButton.IsEnabled = false;
                 SvgButton.IsEnabled = false;
+                PdfButton.IsEnabled = false;
                 SaveButton.IsEnabled = false;
                 CopyPayloadButton.IsEnabled = false;
                 CopyHtmlButton.IsEnabled = false;
@@ -101,26 +115,22 @@ namespace QuickQr
 
             try
             {
-                var payload = BuildPayload(ContentBox.Text.Trim());
-                var correctionItem = CorrectionCombo.SelectedItem as System.Windows.Controls.ComboBoxItem;
-                var correction = correctionItem == null ? QRCodeGenerator.ECCLevel.M : GetCorrection(correctionItem.Tag.ToString());
+                var item = TypeCombo.SelectedItem as ComboBoxItem;
+                var type = item == null ? "text" : item.Tag.ToString();
+                var correctionItem = CorrectionCombo.SelectedItem as ComboBoxItem;
+                var correctionTag = correctionItem == null ? "M" : correctionItem.Tag.ToString();
+                currentPng = QrGeneratorHelper.CreatePngBytes(ContentBox.Text.Trim(), type, correctionTag, settings == null ? 24 : settings.PixelSize,
+                    settings == null ? "#17212B" : settings.QrForegroundColor,
+                    settings == null ? "#FFFFFF" : settings.QrBackgroundColor,
+                    settings == null || settings.IncludeQuietZones);
 
-                using (var generator = new QRCodeGenerator())
-                using (var data = generator.CreateQrCode(payload, correction))
-                {
-                    var qr = new PngByteQRCode(data);
-                    currentPng = qr.GetGraphic(settings == null ? 24 : settings.PixelSize,
-                        HexToRgb(settings == null ? "#17212B" : settings.ForegroundColor),
-                        HexToRgb(settings == null ? "#FFFFFF" : settings.BackgroundColor),
-                        settings == null || settings.IncludeQuietZones);
-                }
-
-                    QrImage.Source = ToBitmapImage(currentPng);
+                QrImage.Source = ToBitmapImage(currentPng);
                 AnimateQrPreview();
                 UpdateImageInfo();
                 EmptyState.Visibility = Visibility.Collapsed;
                 CopyButton.IsEnabled = true;
                 SvgButton.IsEnabled = true;
+                PdfButton.IsEnabled = true;
                 SaveButton.IsEnabled = true;
                 CopyPayloadButton.IsEnabled = true;
                 CopyHtmlButton.IsEnabled = true;
@@ -141,6 +151,7 @@ namespace QuickQr
                 {
                     StatusText.Text = "Updated just now";
                 }
+                if (settings.AutoSavePng) ScheduleAutoSave();
             }
             catch (Exception ex)
             {
@@ -149,75 +160,10 @@ namespace QuickQr
                 EmptyState.Visibility = Visibility.Visible;
                 CopyButton.IsEnabled = false;
                 SvgButton.IsEnabled = false;
+                PdfButton.IsEnabled = false;
                 SaveButton.IsEnabled = false;
                 StatusText.Text = ex.Message;
             }
-        }
-
-        private string BuildPayload(string value)
-        {
-            var item = TypeCombo.SelectedItem as System.Windows.Controls.ComboBoxItem;
-            var type = item == null ? "text" : item.Tag.ToString();
-            if (type == "email") return "mailto:" + value;
-            if (type == "phone") return "tel:" + value;
-            if (type == "sms")
-            {
-                var smsParts = value.Split(new[] { '|' }, 2);
-                return smsParts.Length == 2 ? "SMSTO:" + smsParts[0] + ":" + smsParts[1] : "SMSTO:" + value;
-            }
-            if (type == "bitcoin")
-            {
-                var bitcoinParts = value.Split(new[] { '|' }, 3);
-                var address = bitcoinParts.Length > 0 ? bitcoinParts[0] : value;
-                var amount = bitcoinParts.Length > 1 ? bitcoinParts[1] : string.Empty;
-                var label = bitcoinParts.Length > 2 ? bitcoinParts[2] : string.Empty;
-                var uri = "bitcoin:" + address;
-                var query = string.Empty;
-                if (!string.IsNullOrWhiteSpace(amount)) query += "amount=" + Uri.EscapeDataString(amount);
-                if (!string.IsNullOrWhiteSpace(label)) query += (query.Length > 0 ? "&" : string.Empty) + "label=" + Uri.EscapeDataString(label);
-                return query.Length > 0 ? uri + "?" + query : uri;
-            }
-            if (type == "event")
-            {
-                var eventParts = value.Split(new[] { '|' }, 4);
-                var title = eventParts.Length > 0 ? eventParts[0] : "Event";
-                var start = eventParts.Length > 1 ? eventParts[1] : string.Empty;
-                var location = eventParts.Length > 2 ? eventParts[2] : string.Empty;
-                var description = eventParts.Length > 3 ? eventParts[3] : string.Empty;
-                return "BEGIN:VEVENT\nSUMMARY:" + Uri.EscapeDataString(title) + "\nDTSTART:" + start + "\nLOCATION:" + Uri.EscapeDataString(location) + "\nDESCRIPTION:" + Uri.EscapeDataString(description) + "\nEND:VEVENT";
-            }
-            if (type == "location")
-            {
-                var locationParts = value.Split(new[] { '|' }, 3);
-                var latitude = locationParts.Length > 0 ? locationParts[0] : string.Empty;
-                var longitude = locationParts.Length > 1 ? locationParts[1] : string.Empty;
-                var label = locationParts.Length > 2 ? locationParts[2] : string.Empty;
-                var uri = "geo:" + latitude + "," + longitude;
-                return string.IsNullOrWhiteSpace(label) ? uri : uri + "?q=" + Uri.EscapeDataString(label);
-            }
-            if (type == "vcard")
-            {
-                var cardParts = value.Split('|');
-                var name = cardParts.Length > 0 ? cardParts[0] : value;
-                var phone = cardParts.Length > 1 ? cardParts[1] : string.Empty;
-                var email = cardParts.Length > 2 ? cardParts[2] : string.Empty;
-                return "BEGIN:VCARD\nVERSION:3.0\nFN:" + name + "\nTEL:" + phone + "\nEMAIL:" + email + "\nEND:VCARD";
-            }
-            if (type == "wifi")
-            {
-                var parts = value.Split('|');
-                if (parts.Length >= 2)
-                {
-                    var security = parts.Length > 2 && !string.IsNullOrWhiteSpace(parts[2]) ? parts[2] : "WPA";
-                    return "WIFI:T:" + security + ";S:" + EscapeWifi(parts[0]) + ";P:" + EscapeWifi(parts[1]) + ";;";
-                }
-            }
-            return value;
-        }
-
-        private string EscapeWifi(string value)
-        {
-            return value.Replace("\\", "\\\\").Replace(";", "\\;").Replace(",", "\\,").Replace(":", "\\:");
         }
 
         private QRCodeGenerator.ECCLevel GetCorrection(string tag)
@@ -388,13 +334,13 @@ namespace QuickQr
             }
 
             QrImage.Opacity = 0;
-            var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220))
+            var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180))
             {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
-            var scale = new DoubleAnimation(0.98, 1, TimeSpan.FromMilliseconds(220))
+            var scale = new DoubleAnimation(0.98, 1, TimeSpan.FromMilliseconds(180))
             {
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
 
             QrImage.BeginAnimation(UIElement.OpacityProperty, fade);
@@ -436,6 +382,73 @@ namespace QuickQr
             }
             AddToHistory();
             StatusText.Text = "QR generated";
+        }
+
+        private void SchedulePreview()
+        {
+            previewTimer.Stop();
+            previewTimer.Start();
+        }
+
+        private void PreviewTimer_Tick(object sender, EventArgs e)
+        {
+            previewTimer.Stop();
+            GenerateQr();
+        }
+
+        private void ScheduleAutoSave()
+        {
+            autoSaveTimer.Stop();
+            autoSaveTimer.Start();
+        }
+
+        private void AutoSaveTimer_Tick(object sender, EventArgs e)
+        {
+            autoSaveTimer.Stop();
+            if (currentPng == null) return;
+            try
+            {
+                var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuickQr", "AutoSave");
+                Directory.CreateDirectory(folder);
+                File.WriteAllBytes(Path.Combine(folder, "latest.png"), currentPng);
+            }
+            catch
+            {
+            }
+        }
+
+        private void ApplyPreset_Click(object sender, RoutedEventArgs e)
+        {
+            var preset = (PresetCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+            if (string.IsNullOrWhiteSpace(preset) || preset == "none")
+            {
+                StatusText.Text = "Choose a preset first";
+                return;
+            }
+
+            var sample = preset == "url" ? "https://example.com"
+                : preset == "vcard" ? "Full Name|+1 555 010 1234|name@example.com"
+                : preset == "wifi" ? "NetworkName|NetworkPassword|WPA"
+                : "wallet-address|0.01|Payment label";
+
+            TypeCombo.SelectedIndex = GetTypeIndex(preset);
+            ContentBox.Text = sample;
+            ContentBox.Focus();
+            ContentBox.SelectAll();
+            StatusText.Text = "Preset applied";
+        }
+
+        private void BulkQr_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new BulkQrWindow { Owner = this };
+                dialog.ShowDialog();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Bulk QR could not be opened", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void AddToHistory()
@@ -526,7 +539,7 @@ namespace QuickQr
         private void CopyPayloadButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(ContentBox.Text)) return;
-            Clipboard.SetText(BuildPayload(ContentBox.Text.Trim()));
+            Clipboard.SetText(QrGeneratorHelper.BuildPayload(ContentBox.Text.Trim(), GetCurrentType()));
             StatusText.Text = "Payload copied";
         }
 
@@ -544,13 +557,13 @@ namespace QuickQr
             if (string.IsNullOrWhiteSpace(ContentBox.Text)) return;
             try
             {
-                var payload = BuildPayload(ContentBox.Text.Trim());
+                var payload = QrGeneratorHelper.BuildPayload(ContentBox.Text.Trim(), GetCurrentType());
                 Process.Start(new ProcessStartInfo($"mailto:?subject=Quick%20QR&body={Uri.EscapeDataString(payload)}") { UseShellExecute = true });
                 StatusText.Text = "Sharing via mail client";
             }
             catch (Exception)
             {
-                Clipboard.SetText(BuildPayload(ContentBox.Text.Trim()));
+                Clipboard.SetText(QrGeneratorHelper.BuildPayload(ContentBox.Text.Trim(), GetCurrentType()));
                 StatusText.Text = "Share failed, payload copied";
             }
         }
@@ -576,12 +589,48 @@ namespace QuickQr
             var correctionItem = CorrectionCombo.SelectedItem as System.Windows.Controls.ComboBoxItem;
             var correction = correctionItem == null ? QRCodeGenerator.ECCLevel.M : GetCorrection(correctionItem.Tag.ToString());
             using (var generator = new QRCodeGenerator())
-            using (var data = generator.CreateQrCode(BuildPayload(ContentBox.Text.Trim()), correction))
+            using (var data = generator.CreateQrCode(QrGeneratorHelper.BuildPayload(ContentBox.Text.Trim(), GetCurrentType()), correction))
             {
                 var svg = new SvgQRCode(data).GetGraphic(10);
                 File.WriteAllText(dialog.FileName, svg);
             }
             StatusText.Text = "SVG saved successfully";
+        }
+
+        private void PdfButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentPng == null) return;
+            var dialog = new SaveFileDialog
+            {
+                Filter = "PDF document|*.pdf",
+                FileName = "quick-qr.pdf",
+                AddExtension = true,
+                OverwritePrompt = true
+            };
+            if (dialog.ShowDialog() != true) return;
+
+            using (var document = new PdfDocument())
+            using (var stream = new MemoryStream(currentPng))
+            using (var image = XImage.FromStream(stream))
+            {
+                var page = document.AddPage();
+                page.Size = PdfSharp.PageSize.A4;
+                using (var graphics = XGraphics.FromPdfPage(page))
+                {
+                    const double imageSize = 420;
+                    var x = (page.Width - imageSize) / 2;
+                    var y = (page.Height - imageSize) / 2;
+                    graphics.DrawImage(image, x, y, imageSize, imageSize);
+                }
+                document.Save(dialog.FileName);
+            }
+            StatusText.Text = "PDF saved successfully";
+        }
+
+        private string GetCurrentType()
+        {
+            var item = TypeCombo.SelectedItem as ComboBoxItem;
+            return item == null ? "text" : item.Tag?.ToString() ?? "text";
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
@@ -605,6 +654,25 @@ namespace QuickQr
                 (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) == System.Windows.Input.ModifierKeys.Control)
             {
                 ContentBox.Focus();
+                e.Handled = true;
+            }
+            else if (e.Key == System.Windows.Input.Key.S &&
+                (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) == System.Windows.Input.ModifierKeys.Control)
+            {
+                if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) == System.Windows.Input.ModifierKeys.Shift)
+                {
+                    SvgButton_Click(sender, e);
+                }
+                else
+                {
+                    SaveButton_Click(sender, e);
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == System.Windows.Input.Key.P &&
+                (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) == System.Windows.Input.ModifierKeys.Control)
+            {
+                PdfButton_Click(sender, e);
                 e.Handled = true;
             }
             else if (e.Key == System.Windows.Input.Key.Escape)
@@ -636,6 +704,17 @@ namespace QuickQr
             if (ContentBox != null && !ContentBox.IsKeyboardFocused)
             {
                 Keyboard.ClearFocus();
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            previewTimer.Stop();
+            autoSaveTimer.Stop();
+            if (settings.MinimizeToTray && !AllowClose)
+            {
+                e.Cancel = true;
+                Hide();
             }
         }
     }

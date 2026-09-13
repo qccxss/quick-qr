@@ -20,8 +20,12 @@ namespace QuickQr
             QuietZoneCheck.IsChecked = settings.IncludeQuietZones;
             LivePreviewCheck.IsChecked = settings.LivePreview;
             AutoCopyCheck.IsChecked = settings.AutoCopy;
+            AutoSaveCheck.IsChecked = settings.AutoSavePng;
+            TrayCheck.IsChecked = settings.MinimizeToTray;
             SystemThemeCheck.IsChecked = settings.FollowSystemTheme;
             HistoryCheck.IsChecked = settings.SaveHistory;
+            ForegroundColorBox.Text = settings.QrForegroundColor;
+            BackgroundColorBox.Text = settings.QrBackgroundColor;
         }
 
         private int PixelIndex(int value)
@@ -49,15 +53,35 @@ namespace QuickQr
             settings.IncludeQuietZones = QuietZoneCheck.IsChecked == true;
             settings.LivePreview = LivePreviewCheck.IsChecked == true;
             settings.AutoCopy = AutoCopyCheck.IsChecked == true;
+            settings.AutoSavePng = AutoSaveCheck.IsChecked == true;
+            settings.MinimizeToTray = TrayCheck.IsChecked == true;
             settings.FollowSystemTheme = SystemThemeCheck.IsChecked == true;
             if (settings.FollowSystemTheme)
             {
                 settings.Theme = AppTheme.System;
             }
             settings.ApplyTheme(settings.Theme);
+            settings.QrForegroundColor = ParseHexColor(ForegroundColorBox.Text, settings.QrForegroundColor);
+            settings.QrBackgroundColor = ParseHexColor(BackgroundColorBox.Text, settings.QrBackgroundColor);
             settings.Save();
             Result = settings;
             DialogResult = true;
+        }
+
+        private string ParseHexColor(string value, string fallback)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return fallback;
+                var normalized = value.Trim();
+                if (!normalized.StartsWith("#")) normalized = "#" + normalized;
+                var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(normalized);
+                return "#" + color.R.ToString("X2") + color.G.ToString("X2") + color.B.ToString("X2");
+            }
+            catch
+            {
+                return fallback;
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

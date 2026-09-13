@@ -1,0 +1,45 @@
+<Window x:Class="QuickQr.BulkQrWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bulk QR Generator" Width="780" Height="620" WindowStartupLocation="CenterOwner"
+        Background="Transparent" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Border CornerRadius="24" Background="{DynamicResource CanvasGradient}" BorderBrush="{DynamicResource WindowBorderBrush}" BorderThickness="1" Padding="24" Effect="{StaticResource SoftShadow}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Bulk QR generator" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="Bold" />
+                <TextBlock Text="Paste one item per line to generate multiple QR codes at once." Foreground="{DynamicResource MutedBrush}" Margin="0,8,0,18" />
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                    <TextBlock Text="CONTENT TYPE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                    <ComboBox x:Name="TypeCombo" Style="{StaticResource SelectBox}" SelectedIndex="0">
+                        <ComboBoxItem Content="Plain text" Tag="text" />
+                        <ComboBoxItem Content="Web link" Tag="url" />
+                        <ComboBoxItem Content="E-mail address" Tag="email" />
+                        <ComboBoxItem Content="Wi-Fi network" Tag="wifi" />
+                        <ComboBoxItem Content="Phone number" Tag="phone" />
+                        <ComboBoxItem Content="SMS message" Tag="sms" />
+                        <ComboBoxItem Content="Location" Tag="location" />
+                        <ComboBoxItem Content="Contact card" Tag="vcard" />
+                    </ComboBox>
+                </StackPanel>
+                <TextBox x:Name="InputBox" Grid.Row="1" Style="{StaticResource InputBox}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontFamily="{StaticResource BodyFont}" Text="" />
+            </Grid>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+                <Button Style="{StaticResource FlatButton}" Width="110" Margin="0,0,8,0" Click="Close_Click">Cancel</Button>
+                <Button x:Name="GenerateButton" Style="{StaticResource FlatButton}" Width="150" Margin="0,0,8,0" Click="Generate_Click">Save to folder</Button>
+                <Button x:Name="GenerateZipButton" Style="{StaticResource AccentButton}" Width="140" Click="GenerateZip_Click">Create ZIP</Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

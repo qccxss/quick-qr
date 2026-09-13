@@ -3,6 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Assets\quick-qr.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RootNamespace>QuickQr</RootNamespace>
@@ -12,12 +13,15 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.2.5</Version>
-    <FileVersion>0.0.2.5</FileVersion>
-    <InformationalVersion>0.0.2.5</InformationalVersion>
+    <Version>0.0.3</Version>
+    <FileVersion>0.0.3</FileVersion>
+    <InformationalVersion>0.0.3</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="PdfSharp" Version="1.50.5147" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <None Include="Assets\quick-qr.ico" />
     <Resource Include="Assets\quick-qr.png" />
     <None Include="app.manifest" />

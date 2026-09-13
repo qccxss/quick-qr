@@ -4,7 +4,7 @@
         Title="Quick QR" Width="1220" Height="790" MinWidth="980" MinHeight="660"
         WindowStartupLocation="CenterScreen" Background="Transparent"
         WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown" KeyDown="Window_KeyDown" Deactivated="Window_Deactivated">
+        MouseLeftButtonDown="Window_MouseLeftButtonDown" KeyDown="Window_KeyDown" Deactivated="Window_Deactivated" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="InputBox" TargetType="TextBox">
             <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
@@ -57,7 +57,7 @@
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,0">
                                 <TextBlock Text="QR WORKSPACE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" />
                                 <Border Background="#1A39B7A5" CornerRadius="10" Padding="8,4" Margin="10,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="v0.0.2.5" Foreground="White" FontSize="11" FontWeight="Bold" />
+                                    <TextBlock Text="v0.0.3" Foreground="White" FontSize="11" FontWeight="Bold" />
                                 </Border>
                             </StackPanel>
                         </StackPanel>
@@ -86,12 +86,27 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <TextBlock Text="Create something scannable." FontFamily="{StaticResource DisplayFont}" FontSize="31" FontWeight="Bold" />
                         <TextBlock Text="Turn a link, note or contact detail into a clean QR code." Foreground="{DynamicResource MutedBrush}" FontSize="14" Margin="0,9,0,0" />
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Margin="0,30,0,0">
+                    <Grid Grid.Row="1" Margin="0,22,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="READY PRESETS" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                            <ComboBox x:Name="PresetCombo" Style="{StaticResource SelectBox}" SelectedIndex="0">
+                                <ComboBoxItem Content="Choose a preset" Tag="none" />
+                                <ComboBoxItem Content="Web site" Tag="url" />
+                                <ComboBoxItem Content="Contact card" Tag="vcard" />
+                                <ComboBoxItem Content="Wi-Fi network" Tag="wifi" />
+                                <ComboBoxItem Content="Payment" Tag="bitcoin" />
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Grid.Column="1" Style="{StaticResource FlatButton}" Content="Apply" VerticalAlignment="Bottom" Margin="10,0,0,0" Click="ApplyPreset_Click" />
+                    </Grid>
+                    <StackPanel Grid.Row="2" Margin="0,22,0,0">
                         <TextBlock Text="CONTENT TYPE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
                         <ComboBox x:Name="TypeCombo" Style="{StaticResource SelectBox}" SelectedIndex="0" SelectionChanged="TypeCombo_SelectionChanged">
                             <ComboBoxItem Content="Plain text" Tag="text" />
@@ -106,7 +121,7 @@
                             <ComboBoxItem Content="Contact card" Tag="vcard" />
                         </ComboBox>
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Margin="0,22,0,0">
+                    <StackPanel Grid.Row="3" Margin="0,22,0,0">
                         <Grid Margin="0,0,0,8">
                             <TextBlock Text="YOUR CONTENT" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" />
                             <TextBlock x:Name="CountText" Text="0 / 1200" Foreground="{DynamicResource MutedBrush}" FontSize="11" HorizontalAlignment="Right" />
@@ -114,7 +129,7 @@
                         <TextBox x:Name="ContentBox" Style="{StaticResource InputBox}" Height="144" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MaxLength="1200" TextChanged="ContentBox_TextChanged" LostKeyboardFocus="ContentBox_LostKeyboardFocus" />
                         <TextBlock x:Name="HintText" Text="Add any text you want to share." Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="3,7,0,0" />
                     </StackPanel>
-                    <StackPanel Grid.Row="3" Margin="0,25,0,0">
+                    <StackPanel Grid.Row="4" Margin="0,25,0,0">
                         <TextBlock Text="ERROR CORRECTION" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
                         <ComboBox x:Name="CorrectionCombo" Style="{StaticResource SelectBox}" SelectedIndex="0" SelectionChanged="CorrectionCombo_SelectionChanged">
                             <ComboBoxItem Content="Auto" Tag="Auto" />
@@ -125,9 +140,10 @@
                         </ComboBox>
                         <TextBlock Text="Higher correction makes codes more resilient, but slightly denser." Foreground="{DynamicResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="3,8,10,0" />
                     </StackPanel>
-                    <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,20,0,0">
+                    <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,20,0,0">
                         <Button x:Name="CreateButton" Style="{StaticResource AccentButton}" Width="164" Click="CreateButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A7;" FontFamily="{StaticResource IconFont}" FontSize="15" /><TextBlock Text="Generate QR" Margin="8,0,0,0" /></StackPanel></Button>
                         <Button Style="{StaticResource FlatButton}" Margin="8,0,0,0" Click="ClearButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74D;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Clear" Margin="7,0,0,0" /></StackPanel></Button>
+                        <Button Style="{StaticResource FlatButton}" Margin="8,0,0,0" Click="BulkQr_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Bulk" Margin="7,0,0,0" /></StackPanel></Button>
                     </StackPanel>
                 </Grid>
                 <Border Grid.Column="1" Background="{DynamicResource LineBrush}" Width="1" HorizontalAlignment="Center" />
@@ -163,6 +179,7 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button x:Name="CopyButton" Style="{StaticResource FlatButton}" IsEnabled="False" Click="CopyButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8C8;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Copy" Margin="7,0,0,0" /></StackPanel></Button>
                                 <Button x:Name="SvgButton" Style="{StaticResource FlatButton}" IsEnabled="False" Margin="4,0,0,0" Click="SvgButton_Click"><TextBlock Text="SVG" FontSize="12" FontWeight="SemiBold" /></Button>
+                                <Button x:Name="PdfButton" Style="{StaticResource FlatButton}" IsEnabled="False" Margin="4,0,0,0" Click="PdfButton_Click"><TextBlock Text="PDF" FontSize="12" FontWeight="SemiBold" /></Button>
                                 <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" IsEnabled="False" Margin="8,0,0,0" Click="SaveButton_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74E;" FontFamily="{StaticResource IconFont}" FontSize="14" /><TextBlock Text="Save PNG" Margin="7,0,0,0" /></StackPanel></Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">

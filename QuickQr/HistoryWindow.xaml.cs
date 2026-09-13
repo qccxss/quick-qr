@@ -33,7 +33,6 @@ namespace QuickQr
         private void HistoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedItem = HistoryList.SelectedItem as HistoryItem;
-            if (SelectedItem != null) DialogResult = true;
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -108,6 +107,36 @@ namespace QuickQr
                 historyView.SortDescriptions.Add(new SortDescription(nameof(HistoryItem.IsFavorite), ListSortDirection.Descending));
                 historyView.SortDescriptions.Add(new SortDescription(nameof(HistoryItem.CreatedAt), ListSortDirection.Descending));
             }
+            else if (tag == "PinnedFirst")
+            {
+                historyView.SortDescriptions.Add(new SortDescription(nameof(HistoryItem.IsPinned), ListSortDirection.Descending));
+                historyView.SortDescriptions.Add(new SortDescription(nameof(HistoryItem.CreatedAt), ListSortDirection.Descending));
+            }
+            UpdateSummary();
+        }
+
+        private void Pin_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is HistoryItem item)
+            {
+                item.IsPinned = !item.IsPinned;
+                store.Persist();
+                historyView.Refresh();
+                UpdateSummary();
+            }
+        }
+
+        private void Edit_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button button) || !(button.Tag is HistoryItem item)) return;
+            var dialog = new HistoryEditWindow(item) { Owner = this };
+            if (dialog.ShowDialog() != true) return;
+            item.Content = dialog.EditedContent;
+            item.Preview = dialog.EditedContent.Replace("\r", " ").Replace("\n", " ");
+            item.Tag = dialog.EditedTag;
+            store.Persist();
+            historyView.Refresh();
+            UpdateEmptyState();
             UpdateSummary();
         }
 
@@ -159,7 +188,10 @@ namespace QuickQr
             if (showFavoritesOnly && !item.IsFavorite) return false;
             var search = SearchBox.Text?.Trim().ToLowerInvariant();
             if (string.IsNullOrEmpty(search)) return true;
-            return item.Preview.ToLowerInvariant().Contains(search) || item.Type.ToLowerInvariant().Contains(search) || item.Content.ToLowerInvariant().Contains(search);
+            return (item.Preview ?? string.Empty).ToLowerInvariant().Contains(search)
+                || (item.Type ?? string.Empty).ToLowerInvariant().Contains(search)
+                || (item.Content ?? string.Empty).ToLowerInvariant().Contains(search)
+                || (item.Tag ?? string.Empty).ToLowerInvariant().Contains(search);
         }
 
         private void UpdateFilterButtons()
@@ -173,7 +205,8 @@ namespace QuickQr
             var total = store.Items.Count;
             var visible = historyView.Cast<object>().Count();
             var favorites = store.Items.Count(item => item.IsFavorite);
-            HistorySummaryText.Text = $"{visible} of {total} items shown · {favorites} favorites";
+            var pinned = store.Items.Count(item => item.IsPinned);
+            HistorySummaryText.Text = $"{visible} of {total} items shown · {favorites} favorites · {pinned} pinned";
         }
 
         private void UpdateEmptyState()
@@ -184,6 +217,12 @@ namespace QuickQr
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
+        }
+
+        private void UseSelected_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedItem == null) return;
+            DialogResult = true;
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

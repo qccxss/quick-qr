@@ -29,6 +29,8 @@ namespace QuickQr
         public AppTheme Theme { get; set; } = AppTheme.Light;
         public string ForegroundColor { get; set; } = "#17212B";
         public string BackgroundColor { get; set; } = "#FFFFFF";
+        public string QrForegroundColor { get; set; } = "#17212B";
+        public string QrBackgroundColor { get; set; } = "#FFFFFF";
         public string AccentColor { get; set; } = "#F36B4F";
         public string CanvasColor { get; set; } = "#F7F8F6";
         public int PixelSize { get; set; } = 24;
@@ -36,6 +38,8 @@ namespace QuickQr
         public bool LivePreview { get; set; } = true;
         public bool SaveHistory { get; set; } = true;
         public bool AutoCopy { get; set; } = false;
+        public bool AutoSavePng { get; set; } = false;
+        public bool MinimizeToTray { get; set; } = false;
         public bool FollowSystemTheme { get; set; } = false;
         public int MaxHistoryItems { get; set; } = 12;
         public string LastContentType { get; set; } = "text";
@@ -220,6 +224,18 @@ namespace QuickQr
         public string Preview { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        private string tag;
+        public string Tag
+        {
+            get => tag;
+            set
+            {
+                if (tag == value) return;
+                tag = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Tag)));
+            }
+        }
+
         private bool isFavorite;
         public bool IsFavorite
         {
@@ -229,6 +245,18 @@ namespace QuickQr
                 if (isFavorite == value) return;
                 isFavorite = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsFavorite)));
+            }
+        }
+
+        private bool isPinned;
+        public bool IsPinned
+        {
+            get => isPinned;
+            set
+            {
+                if (isPinned == value) return;
+                isPinned = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPinned)));
             }
         }
     }

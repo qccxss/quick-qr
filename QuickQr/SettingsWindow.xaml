@@ -26,7 +26,21 @@
                 <ComboBoxItem Content="System" Tag="System" />
             </ComboBox>
             <TextBlock Text="QR OUTPUT" Style="{StaticResource SectionLabel}" />
-            <Grid Margin="0,12,0,10">
+            <StackPanel Margin="0,10,0,18">
+                <TextBlock Text="Custom QR colors" FontWeight="SemiBold" />
+                <TextBlock Text="Override the QR foreground and background colors for exported and previewed codes." Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,8" />
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="120" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Foreground" VerticalAlignment="Center" />
+                    <TextBox x:Name="ForegroundColorBox" Grid.Column="1" Style="{StaticResource InputBox}" Text="#17212B" />
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="120" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Background" VerticalAlignment="Center" />
+                    <TextBox x:Name="BackgroundColorBox" Grid.Column="1" Style="{StaticResource InputBox}" Text="#FFFFFF" />
+                </Grid>
+            </StackPanel>
+            <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
                 <StackPanel>
                     <TextBlock Text="Pixel size" FontWeight="SemiBold" />
@@ -40,6 +54,8 @@
             <TextBlock Text="WORKFLOW" Style="{StaticResource SectionLabel}" />
             <CheckBox x:Name="LivePreviewCheck" Content="Generate while typing" Foreground="{DynamicResource InkBrush}" Margin="0,12,0,10" />
             <CheckBox x:Name="AutoCopyCheck" Content="Copy QR automatically" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
+            <CheckBox x:Name="AutoSaveCheck" Content="Save the latest QR automatically" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
+            <CheckBox x:Name="TrayCheck" Content="Minimize to system tray when closed" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
             <CheckBox x:Name="SystemThemeCheck" Content="Follow Windows theme" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
             <CheckBox x:Name="HistoryCheck" Content="Keep recent QR history" Foreground="{DynamicResource InkBrush}" Margin="0,0,0,10" />
             <Grid Margin="0,4,0,30">
