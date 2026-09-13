@@ -262,33 +262,6 @@ Quick QR stores settings and history locally under:
 
 The application does not upload QR content during normal operation. Local history can be disabled from Settings or cleared from the History window.
 
----
-
-## Project Structure
-
-```text
-quick-qr/
-├── quick-qr.sln                 Visual Studio solution
-├── README.md                    Project documentation
-├── LICENSE                      MIT license
-└── QuickQr/
-    ├── QuickQr.csproj           .NET Framework 4.8 WPF project
-    ├── app.manifest             Windows execution and DPI metadata
-    ├── App.xaml                 Application resources and shared styles
-    ├── App.xaml.cs              Application startup
-    ├── MainWindow.xaml          Main generator interface
-    ├── MainWindow.xaml.cs       QR generation and main window behavior
-    ├── SettingsWindow.xaml      Settings interface
-    ├── SettingsWindow.xaml.cs  Settings behavior
-    ├── HistoryWindow.xaml       History interface
-    ├── HistoryWindow.xaml.cs   History behavior
-    ├── UserSettings.cs          Persistent settings and history models
-    ├── Assets/
-    │   ├── quick-qr.ico         Multi-resolution Windows application icon
-    │   └── quick-qr.png         512x512 source icon asset
-    └── Properties/
-        └── AssemblyInfo.cs      Assembly metadata
-```
 
 ---
 
