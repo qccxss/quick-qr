@@ -9,7 +9,7 @@
 ![Language](https://img.shields.io/badge/language-C%23-239120?style=flat-square)
 ![UI](https://img.shields.io/badge/UI-WPF-5C2D91?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-white?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.0.2.5-black?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.0.3-black?style=flat-square)
 
 </div>
 
