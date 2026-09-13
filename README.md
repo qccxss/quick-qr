@@ -23,12 +23,17 @@ The application is designed to keep the QR creation workflow fast and private. C
 
 ---
 
-## What's new in 0.0.2.5
+## What's new in 0.0.3
 
-- Expanded theming options with `Twilight`, `Neon`, `Minimal`, and `Glass`.
-- Added new QR content types: Bitcoin payment, Event invitation, and Location.
-- Added quick workflow actions: Copy payload, Copy HTML snippet, and Share (mailto integration).
-- Improved export workflows, status messaging, and several UI polish fixes.
+- Added bulk QR generation with folder export and ZIP archive support.
+- Added PNG, SVG, and PDF export options for individual QR codes.
+- Added customizable QR foreground and background colors.
+- Added ready-to-use presets for websites, contact cards, Wi-Fi networks, and payments.
+- Upgraded history with search, favorites, pinned items, labels, editing, sorting, backup, and restore.
+- Improved live preview performance with debounced generation and smoother animations.
+- Added keyboard shortcuts for generating and exporting QR codes.
+- Added optional automatic latest-image saving and system tray mode.
+- Added expanded themes including `Twilight`, `Neon`, `Minimal`, `Glass`, `Solarized`, `Monochrome`, and `Pastel`.
 
 ---
 
