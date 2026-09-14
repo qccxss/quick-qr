@@ -323,5 +323,5 @@ Try the following:
 ---
 
 <div align="center">
-  <sub>Quick QR v0.0.2.5</sub>
+  <sub>Quick QR v0.0.3</sub>
 </div>
